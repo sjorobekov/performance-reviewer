@@ -1,3 +1,5 @@
+const { HttpException } = require('@adonisjs/generic-exceptions')
+
 const Review = use('App/Models/Review')
 const ReviewItem = use('App/Models/ReviewItem')
 
@@ -6,11 +8,10 @@ const Database = use('Database')
 
 class ReviewController {
   async index({ request }) {
-    return Database.select('reviews.*', 'employee.fullname as employee_fullname', 'author.fullname as author_fullname')
-      .from('reviews')
-      .innerJoin('users as employee', 'reviews.employee_id', 'employee.id')
-      .leftJoin('users as author', 'reviews.created_by_id', 'author.id')
-      .orderBy('reviews.created_at', 'desc')
+    return Review.query()
+      .with('employee')
+      .with('createdBy')
+      .orderBy('created_at', 'desc')
       .paginate(request.input('page'))
   }
 
@@ -30,8 +31,14 @@ class ReviewController {
   }
 
   async show({params}) {
-    const review = await Review.findOrFail(params.id)
-    review._employee = await review.employee().fetch()
+    const review = await Review
+      .query()
+      .where('id', params.id).with('employee')
+      .first()
+
+    if (!review) {
+      throw new HttpException('Not Found', 404, 'E_NOT_FOUND')
+    }
     return review
   }
 
@@ -77,14 +84,9 @@ class ReviewController {
     const item = await ReviewItem.query()
       .where('assignee_id', me.id)
       .andWhereRaw('rating IS NULL')
+      .with('review')
+      .with('review.employee')
       .first()
-
-    if (item) {
-      const review = await item.review().fetch()
-      const employee = await review.employee().fetch()
-      item.employee_id = employee.id
-      item.employee_fullname = employee.fullname
-    }
 
     return item
   }

@@ -33,11 +33,11 @@
       <template v-slot:items="props">
         <td>
           <router-link :to="{ name: 'ReviewDetails', params: { reviewId: props.item.id }}">
-            {{ props.item.employee_fullname }}
+            {{ props.item.employee.fullname }}
           </router-link>
         </td>
         <td>
-          {{ props.item.author_fullname }}
+          {{ props.item.createdBy ? props.item.createdBy.fullname : '' }}
         </td>
         <td>
           <v-chip color="primary"
@@ -80,7 +80,6 @@ export default {
       pagination: {
         rowsPerPage: 20,
         page: 1,
-        sortBy: 'fullname'
       },
       rowsPerPageItems: [20],
       headers: [
@@ -88,6 +87,7 @@ export default {
           text: 'Employee',
           align: 'left',
           value: 'fullname',
+          sortable: false,
         },
         {
           text: 'Created By',

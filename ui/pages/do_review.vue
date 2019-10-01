@@ -5,7 +5,7 @@
         <v-card-title primary-title>
           <div>
             <h3 class="headline mb-0">
-              Performance review of {{ review.employee_fullname }}
+              Performance review of {{ review.review.employee.fullname }}
             </h3>
             <div>Let us know your opinion</div>
           </div>

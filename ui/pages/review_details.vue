@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar class="elevation-1" color="white">
-      <v-toolbar-title>Review details about {{ review._employee.fullname }}</v-toolbar-title>
+      <v-toolbar-title>Review details about {{ review.employee.fullname }}</v-toolbar-title>
       <v-spacer />
     </v-toolbar>
 
